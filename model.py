@@ -46,7 +46,7 @@ class QTrainer:
             action = torch.unsqueeze(action, 0)
             reward = torch.unsqueeze(reward, 0)
             done = (done, )
-        # 1: predicted Q values with current state
+        # 1: predicted Q values with current state()
         pred = self.model(state)
         
         target = pred.clone()
@@ -58,9 +58,7 @@ class QTrainer:
             target[idx][torch.argmax(action[idx]).item()] = Q_new
 
         # 2: Q_new = r + y * max(next_predicted Q value) only do this if not done
-        loss = F.smooth_l1_loss(pred, target, beta=1.0) # now testing # 2.0이 default 1.0이나 2.0이나 비슷한 것 같기도 하고..?
-        #loss = nn.SmoothL1Loss()
-
+        loss = F.smooth_l1_loss(pred, target)
 
         self.optimizer.zero_grad()
         loss.backward()

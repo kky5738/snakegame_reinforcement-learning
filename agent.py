@@ -16,16 +16,17 @@ class Agent:
     def __init__(self):
         self.n_games = 0
         self.epsilon = 0 # randomness
-        self.gamma = 0.85 # discount rate 
+        self.gamma = 0.85 # discount rate # 0.8~0.9
         self.memory = deque(maxlen=MAX_MEMORY) 
-        self.model = Linear_QNet(11, 128, 3) 
+        self.model = Linear_QNet(11, 128, 3)
         self.model_target = Linear_QNet(11, 128, 3)
 
-        self.model.load_state_dict(torch.load('./model/module_best.pth'))
-        self.model.eval()
+        # load best model(model's best parameters)
+        # self.model.load_state_dict(torch.load('./model/module_best.pth'))
+        # self.model.eval()
 
-        self.model_target.load_state_dict(torch.load('./model/module_target_best.pth'))
-        self.model.eval()
+        # self.model_target.load_state_dict(torch.load('./model/module_target_best.pth'))
+        # self.model.eval()
         self.trainer = QTrainer(self.model, self.model_target, lr=LR, gamma=self.gamma)
 
     def get_state(self, game):
@@ -35,7 +36,6 @@ class Agent:
         point_u = Vector2(head.x, head.y - 20)
         point_d = Vector2(head.x, head.y + 20)
         
-        # one-hot encoding
         dir_l = game.direction == Direction.LEFT
         dir_r = game.direction == Direction.RIGHT
         dir_u = game.direction == Direction.UP
@@ -92,10 +92,11 @@ class Agent:
         self.trainer.train_step(state, action, reward, next_state, done)
 
     def get_action(self, state):
-        # random moves: tradeoff exploration / exploitation
-        # self.epsilon = 85 - self.n_games # 처음부터 학습시킬 경우 주석 해제
+        #random moves: tradeoff exploration / exploitation
+        self.epsilon = 85 - self.n_games
         final_move = [0,0,0]
         
+        # 학습시킬 경우 주석 해제, 테스트할 경우 100~107번째 라인 주석
         # if random.randint(0, 150) < self.epsilon:
         #     move = random.randint(0, 2)
         #     final_move[move] = 1 
@@ -133,7 +134,7 @@ def train():
         state_new = agent.get_state(game)
 
         # train short memory
-        # agent.train_short_memory(state_old, final_move, reward, state_new, done)
+        agent.train_short_memory(state_old, final_move, reward, state_new, done)
 
         # remember
         agent.remember(state_old, final_move, reward, state_new, done)
@@ -142,13 +143,15 @@ def train():
             # train long memory, plot result
             game.reset()
             agent.n_games += 1
-            # agent.train_long_memory()
+            agent.train_long_memory()
 
             if score > record:
                 record = score
-
-            # if agent.n_games%12==0:
-            #     agent.target_update()
+                if score > 65:
+                    agent.model.save('module_best.pth')
+                    agent.model_target.save('module_target_best.pth')
+            if agent.n_games%12==0:
+                agent.target_update()
                 
             print('Game', agent.n_games, 'Score', score, 'Record:', record)
 

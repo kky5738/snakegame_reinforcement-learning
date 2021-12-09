@@ -22,7 +22,7 @@ INSIDE = (0, 100, 255)
 font = pygame.font.SysFont('arial', 20)
 
 BLOCK_SIZE = 20
-SPEED = 63
+SPEED = 68
 
 class SnakeGameAI:
 
@@ -66,12 +66,12 @@ class SnakeGameAI:
         self._move_snake(action)
         game_over = self.is_game_over()
         if game_over or self.frame_iteration > 100*len(self.snake):
-            reward = -10 # original = -10
+            reward = -10
             return reward, game_over, self.score
         
         if self.head == self.apple:
             self.score += 1
-            reward = 12 # 리워드 수정할까?
+            reward = 12
             self._place_apple()
         else:
             self.snake.pop()
