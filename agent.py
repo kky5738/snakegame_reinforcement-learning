@@ -21,12 +21,12 @@ class Agent:
         self.model = Linear_QNet(11, 128, 3)
         self.model_target = Linear_QNet(11, 128, 3)
 
-        # 25~29 line 테스트할 경우 주석 해제, 학습시킬 경우 주석
-        # self.model.load_state_dict(torch.load('./model/module_best.pth'))
-        # self.model.eval()
+        # 25~29 line 학습시킬 경우 주석 유지, 테스트할 경우 주석 해제
+        self.model.load_state_dict(torch.load('./model/module_best.pth'))
+        self.model.eval()
 
-        # self.model_target.load_state_dict(torch.load('./model/module_target_best.pth'))
-        # self.model.eval()
+        self.model_target.load_state_dict(torch.load('./model/module_target_best.pth'))
+        self.model.eval()
         self.trainer = QTrainer(self.model, self.model_target, lr=LR, gamma=self.gamma)
 
     def get_state(self, game):
