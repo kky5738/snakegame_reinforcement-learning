@@ -4,4 +4,4 @@
 강화학습을 접목하여 agent가 스스로 snake를 움직이게 하여 점수를 획득하게 하였습니다.
 
 https://github.com/python-engineer/snake-ai-pytorch
-위 코드를 참고하고 만들었습니다.
+위 코드를 참고하여 만들었습니다.

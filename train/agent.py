@@ -21,7 +21,7 @@ class Agent:
         self.model = Linear_QNet(11, 128, 3)
         self.model_target = Linear_QNet(11, 128, 3)
 
-        # load best model(model's best parameters)
+        # 25~29 line 테스트할 경우 주석 해제, 학습시킬 경우 주석
         # self.model.load_state_dict(torch.load('./model/module_best.pth'))
         # self.model.eval()
 
